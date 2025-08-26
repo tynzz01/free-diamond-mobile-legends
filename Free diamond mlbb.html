@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Claim Diamond MOBILE LEGENDS</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --card: #0f1724;
+      --accent: #ffb86b;
+      --muted: #9aa4b2;
+      --glass: rgba(255,255,255,0.03);
+    }
+    * { box-sizing: border-box; font-family: Inter, system-ui, sans-serif; }
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: linear-gradient(180deg,#071025 0%, #081226 60%);
+      color:#e6eef6;
+      padding:24px;
+    }
+    .card{
+      width:100%;
+      max-width:420px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:14px;
+      padding:20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+    h1{ margin:0 0 6px 0; font-size:20px; letter-spacing:0.2px;}
+    p.sub{ margin:0 0 16px 0; color:var(--muted); font-size:13px;}
+    label{ display:block; font-size:13px; margin:8px 0 6px; color:var(--muted); }
+    input[type="text"], select{
+      width:100%;
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.04);
+      background:var(--glass);
+      color:inherit;
+      outline:none;
+    }
+    button.primary{
+      width:100%;
+      margin-top:14px;
+      padding:12px;
+      border-radius:12px;
+      border:0;
+      background: linear-gradient(90deg,#ffb86b,#ff7b7b);
+      color:#0b1220;
+      font-weight:700;
+      font-size:15px;
+      cursor:pointer;
+      box-shadow: 0 6px 18px rgba(255,120,120,0.12);
+    }
+    .muted-small{ font-size:12px; color:var(--muted); margin-top:8px; text-align:center;}
+    /* overlay progress */
+    .overlay{
+      position:fixed;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(2,6,23,0.7);
+      backdrop-filter: blur(4px);
+      z-index:999;
+      visibility:hidden;
+      opacity:0;
+      transition:opacity .18s, visibility .18s;
+    }
+    .overlay.show{ visibility:visible; opacity:1; }
+    .progress-box{
+      width:320px;
+      background:#071227;
+      border-radius:12px;
+      padding:18px;
+      text-align:center;
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+    .bar{
+      width:100%;
+      height:12px;
+      background: rgba(255,255,255,0.04);
+      border-radius:8px;
+      margin-top:12px;
+      overflow:hidden;
+    }
+    .bar > .fill{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg,#ffb86b,#ff7b7b);
+      border-radius:8px;
+      transition: width .2s linear;
+    }
+    .small{ font-size:13px; color:var(--muted); margin-top:8px;}
+    .fake-note{ font-size:13px; color:#ffd9b3; margin-top:10px; }
+  </style>
+</head>
+<body>
+  <div class="card" role="main" aria-labelledby="title">
+    <h1 id="title">Claim Diamond Mobile legends</h1>
+    <p class="sub">Masukkan User ID dan pilih jumlah diamond yang ingin diklaim. </p>
+
+    <label for="uid">User ID (contoh: 123456789)</label>
+    <input id="uid" type="text" placeholder="Masukkan User ID" inputmode="numeric" />
+
+    <label for="amount">Jumlah Diamond</label>
+    <select id="amount">
+      <option value="50">50 Diamond</option>
+      <option value="100">100 Diamond</option>
+      <option value="250">250 Diamond</option>
+      <option value="500">500 Diamond</option>
+      <option value="999">999 Diamond</option>
+    </select>
+
+    <button class="primary" id="claimBtn">Claim Diamond</button>
+    <div class="muted-small">🔒 Aman — resmi on Moonton</div>
+  </div>
+
+  <!-- overlay progres -->
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="progress-box" role="dialog" aria-modal="true" aria-label="Proses Klaim">
+      <div style="display:flex; align-items:center; gap:12px; justify-content:center;">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 2v6" stroke="#ffd9b3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M20 11h-6" stroke="#ffd9b3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 22v-6" stroke="#ff9b9b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 13h6" stroke="#ff9b9b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div style="text-align:left">
+          <div style="font-weight:700">Menghubungkan ke server...</div>
+          <div class="small">Jangan tutup halaman ini sampai proses selesai</div>
+        </div>
+      </div>
+
+      <div class="bar" aria-hidden="true">
+        <div class="fill" id="progressFill"></div>
+      </div>
+      <div class="small" id="progressText">0% — Memeriksa validitas User ID...</div>
+      <div class="fake-note">Catatan: tunggu proses</div>
+    </div>
+  </div>
+
+  <script>
+    const claimBtn = document.getElementById('claimBtn');
+    const uidInput = document.getElementById('uid');
+    const amountSelect = document.getElementById('amount');
+    const overlay = document.getElementById('overlay');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+
+    function showOverlay(){ overlay.classList.add('show'); overlay.setAttribute('aria-hidden','false'); }
+    function hideOverlay(){ overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true'); }
+
+    claimBtn.addEventListener('click', () => {
+      const uid = uidInput.value.trim();
+      if(!uid){
+        alert('Isi dulu User ID 😉');
+        uidInput.focus();
+        return;
+      }
+
+      // mulai prank
+      showOverlay();
+      progressFill.style.width = '0%';
+      progressText.textContent = '0% — Memeriksa validitas User ID...';
+
+      let percent = 0;
+      const messages = [
+        'Memeriksa User ID...',
+        'Menghubungkan ke server regional...',
+        'Menyinkronkan data akun...',
+        'Menambahkan diamond ke akun...',
+        'Finalisasi klaim...'
+      ];
+
+      // naik perlahan sampai ~85-92 lalu jeda, lalu cepat ke 100
+      const interval = setInterval(() => {
+        if(percent < 88){
+          percent += Math.floor(Math.random()*6) + 2; // 2-7%
+          if(percent > 88) percent = 88;
+        } else {
+          percent += Math.floor(Math.random()*6) + 4; // 4-9%
+        }
+        if(percent > 100) percent = 100;
+        progressFill.style.width = percent + '%';
+        const stepIdx = Math.min(messages.length-1, Math.floor(percent/25));
+        progressText.textContent = percent + '% — ' + messages[stepIdx];
+
+        if(percent >= 100){
+          clearInterval(interval);
+          // sedikit delay supaya nampak realistis
+          setTimeout(() => {
+            hideOverlay();
+            // gunakan confirm untuk "OK" user seperti permintaan
+            const ok = confirm('Proses selesai! Klik OK untuk klaim diamond.');
+            if(ok){
+              // langsung pesan prank
+              alert('TAPI BOONG WKWKWKWK😹😹');
+            } else {
+              alert('Yah, batal. Tapi tetap boong 😹');
+            }
+          }, 700);
+        }
+      }, 700);
+    });
+
+    // tekan Enter di field uid akan trigger tombol
+    uidInput.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter') claimBtn.click();
+    });
+  </script>
+</body>
+</html>
